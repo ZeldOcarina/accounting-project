@@ -1,0 +1,10 @@
+functools
+flask
+flask_bootstrap
+werkzeug
+flask_sqlalchemy
+sqlalchemy
+flask_login
+wtforms
+flask_wtf
+email_validator
