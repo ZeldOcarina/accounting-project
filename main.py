@@ -4,6 +4,7 @@ import importlib
 from flask import Flask, redirect, url_for, g
 from flask_bootstrap import Bootstrap
 from flask_login import current_user
+from sqlite3 import OperationalError
 
 from model import db, User
 from views import Home
@@ -38,8 +39,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
-with app.app_context():
-    db.create_all()
+try:
+    with app.app_context():
+        db.create_all()
+except sqlite3.OperationalError:
+    pass
 
 auth.login_manager.init_app(app)
 
