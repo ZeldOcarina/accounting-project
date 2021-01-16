@@ -25,6 +25,7 @@ vendors = importlib.util.module_from_spec(vendors_spec)
 vendors_spec.loader.exec_module(vendors)
 
 APP_SECRET = os.getenv("APP_SECRET")
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///accounting.db")
 
 app = Flask(__name__)
 
@@ -33,16 +34,14 @@ app.config['UPLOAD_FOLDER'] = 'static/uploads'
 Bootstrap(app)
 
 # CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///accounting.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
-# try:
-#     with app.app_context():
-#         db.create_all()
-# except:
-#     print("Unexpected error: ", sys.exc_info()[0])
+try:
+    with app.app_context():
+        db.create_all()
 
 auth.login_manager.init_app(app)
 
