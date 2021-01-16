@@ -1,10 +1,11 @@
 functools
-flask
+flask~=1.1.2
 flask_bootstrap
-werkzeug
+werkzeug~=1.0.1
 flask_sqlalchemy
-sqlalchemy
+sqlalchemy~=1.3.22
 flask_login
-wtforms
+wtforms~=2.3.3
 flask_wtf
 email_validator
+python-dotenv~=0.15.0

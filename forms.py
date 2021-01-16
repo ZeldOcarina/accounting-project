@@ -1,8 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField
-from wtforms.fields.html5 import EmailField, TelField
-from wtforms.validators import DataRequired, URL, Email
-import email_validator
+from wtforms import StringField, SubmitField, PasswordField, SelectField, BooleanField, FileField
+from wtforms.fields.html5 import EmailField, TelField, DateField
+from wtforms.validators import DataRequired, Email
 
 
 class RegisterForm(FlaskForm):
@@ -22,7 +21,32 @@ class CreateCustomer(FlaskForm):
     name = StringField("Customer Name", validators=[DataRequired()])
     phone_number = TelField("Phone Number", validators=[])
     email = EmailField("Email", validators=[Email()])
-    address = StringField("Address")
-    zip_code = StringField("ZIP Code")
-    iva_code = StringField("IVA Code")
-    submit = SubmitField("Create the Customer!")
+    address = StringField("Address", validators=[])
+    zip_code = StringField("ZIP Code", validators=[])
+    iva_code = StringField("IVA Code", validators=[])
+    submit = SubmitField("Submit")
+
+
+class CreateVendor(FlaskForm):
+    name = StringField("Vendor Name", validators=[DataRequired()])
+    phone_number = TelField("Phone Number", validators=[])
+    email = EmailField("Email", validators=[Email()])
+    address = StringField("Address", validators=[])
+    zip_code = StringField("ZIP Code", validators=[])
+    iva_code = StringField("IVA Code", validators=[])
+    submit = SubmitField("Submit")
+
+
+class CreateLine(FlaskForm):
+    line_date = DateField("Date", validators=[DataRequired()])
+    kind = SelectField("Kind", choices=["Invoice", "Expense"], validators=[DataRequired()])
+    item = StringField("Description", validators=[DataRequired()])
+    currency = SelectField("Currency", choices=['CHF', 'EUR', 'USD'])
+    amount = StringField("Amount", validators=[DataRequired()])
+    paid = BooleanField("Paid?")
+    customer = SelectField("Customer")
+    vendor = SelectField("Vendor")
+    document = FileField("Invoice or receipt")
+    submit = SubmitField("Submit")
+
+

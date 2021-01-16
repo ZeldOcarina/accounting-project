@@ -11,22 +11,12 @@
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
           <div class="page-heading">
-            {% if type and type == 'vendor' %}
-              {% if edit %}
-                <h1>Edit {{ vendor.name }}</h1>
-                <span class="subheading">Edit Vendor</span>
-              {% else %}
-                <h1>New Vendor</h1>
-                <span class="subheading">Create a new Vendor</span>
-              {% endif %}
-            {% else %}
             {% if edit %}
             <h1>Edit {{ customer.name }}</h1>
-            <span class="subheading">Edit Customer</span>
+            <span class="subheading">Edit Line</span>
             {% else %}
-            <h1>New Customer</h1>
-            <span class="subheading">Create a new Customer</span>
-            {% endif %}
+            <h1>New Line</h1>
+            <span class="subheading">Create a new bill or invoice</span>
             {% endif %}
 
           </div>
@@ -43,6 +33,7 @@
           <p class=error><strong>Error:</strong> {{ error }}</p>
         {% endif %}
         {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+        {{ form.hidden_tag() }}
       </div>
     </div>
   </div>

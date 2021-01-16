@@ -11,17 +11,90 @@
         <div class="col-lg-8 col-md-10 mx-auto">
           <div class="page-heading">
             <h1>Rasulo Marketing Studio</h1>
-              {% if current_user.is_authenticated %}
+            {% if current_user.is_authenticated %}
             <span class="subheading">Bentornato {{ current_user.name }}!</span>
               {% else %}
             <span class="subheading"><a href="{{ url_for('login') }}">Fai il login</a> per accedere alla contabilit&agrave;</span>
               {% endif %}
-
           </div>
         </div>
       </div>
     </div>
   </header>
+  {% if current_user.is_authenticated %}
+  <div class="query-form container mb-5">
+    <form action="{{ url_for('home') }}" class="query-form__form">
+      <div class="form-group">
+        <label for="daterange">Date</label>
+        <input type="text" id="daterange" name="daterange" value="01/01/2018 - 01/15/2018" />
+        <label class="ml-4" for="customer-picker">Customer</label>
+        <select name="customer" id="customer-picker">
+            <option value="" name="" {% if not query or query.customer == '' %}selected{% endif %}></option>
+          {% for customer in customers %}
+            <option value="{{ customer.id }}" {% if query.customer == str(customer.id) %}selected{% endif %}>{{ customer.name }}</option>
+          {% endfor %}
+        </select>
+        <label class="ml-4" for="vendor-picker">Vendor</label>
+        <select name="vendor" id="vendor-picker">
+            <option value="" {% if not query or query.vendor == '' %}selected{% endif %}></option>
+          {% for vendor in vendors %}
+            <option value="{{ vendor.id }}" {% if query.vendor == str(vendor.id) %}selected{% endif %}>{{ vendor.name }}</option>
+          {% endfor %}
+        </select>
+        <label class="ml-4" for="kind-picker">Kind</label>
+        <select name="kind" id="kind-picker">
+            <option value="" {% if not query or query.kind == '' %}selected{% endif %}></option>
+            <option value="Invoice"{% if query.kind == 'Invoices'%}selected{% endif %}>Invoices</option>
+            <option value="Expense"{% if query.kind == 'Expense'%}selected{% endif %}>Expense</option>
+        </select>
+        <button type="submit" class="btn btn-primary ml-4">Search</button>
+      </div>
+    </form>
+  </div>
+  <div class="main-content container d-flex flex-column align-items-center justify-content-center mt-5">
+    <table class="table">
+      <th scope="col">Kind</th>
+      <th scope="col">Date</th>
+      <th scope="col">Item</th>
+      <th scope="col">Amount</th>
+      <th scope="col">Paid</th>
+      <th scope="col">Customer</th>
+      <th scope="col">Vendor</th>
+      <th scope="col">File</th>
+      <th scope="col">Edit</th>
+      <th scope="col">Delete</th>
+    {% for item in line_items %}
+      <tr>
+        <td>{{ item.kind }}</td>
+        <td>{{ item.date }}</td>
+        <td>{{ item.item }}</td>
+        <td>{% if item.kind != 'Invoice'%}- {% endif %}{{ item.currency }} {{ item.amount }}</td>
+        <td>{% if item.paid %}<span class="text-success">Pagato</span>{% else %}
+          <span class="text-danger">Non Pagato</span>{% endif %}</td>
+        <td>{{ item.customer.name if item.customer else '' }}</td>
+        <td>{{ item.vendor.name if item.vendor else '' }}</td>
+        <td>{% if item.file %}
+              <a href="{{ uploads_directory }}/{{ item.file }}"><i class="far fa-file-pdf"></i></a>
+            {% endif %}
+        </td>
+        <td><a href="{{ url_for('edit_line_item', line_item_id=item.id) }}"><i class="fas fa-edit"></i></a></td>
+        <td><i data-item-id={{ item.id }} class="fas fa-trash-alt delete-icon"></i></td>
+      </tr>
+    {% endfor %}
+      <tr>
+        <td colspan="3">
+          Bilancio Attuale:
+          <span class="{% if total_balance >= 0 %}text-success{% else %}text-danger{% endif %}">CHF {{ total_balance }}
+          </span>
+        </td>
+      </tr>
+    </table>
+    <div class="mt-5">
+      <a class="btn btn-primary text-white" href="{{ url_for('new_line_item') }}">Crea movimento</a>
+    </div>
+
+  </div>
+  {% endif %}
 
 
 
