@@ -38,13 +38,13 @@ class Home(View):
 
 
         # Base currency is EUR
-        # response = requests.get(url=API_ENDPOINT, params={"access_key": API_KEY, "symbols": 'CHF,USD'})
-        # CHF_rate = float(response.json()["rates"]["CHF"])
-        # USD_rate = float(response.json()["rates"]["USD"])
+        response = requests.get(url=API_ENDPOINT, params={"access_key": API_KEY, "symbols": 'CHF,USD'})
+        CHF_rate = float(response.json()["rates"]["CHF"])
+        USD_rate = float(response.json()["rates"]["USD"])
 
         # print(f'CHF: {CHF_rate}, USD: {USD_rate}')
-        CHF_rate = 1.084
-        USD_rate = 1.2225
+        # CHF_rate = 1.084
+        # USD_rate = 1.2225
 
         total_balance = 0
         for line_item in all_line_items:
