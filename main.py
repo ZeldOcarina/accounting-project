@@ -38,11 +38,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
-try:
-    with app.app_context():
-        db.create_all()
-except:
-    print("Unexpected error: ", sys.exc_info()[0])
+# try:
+#     with app.app_context():
+#         db.create_all()
+# except:
+#     print("Unexpected error: ", sys.exc_info()[0])
 
 auth.login_manager.init_app(app)
 
