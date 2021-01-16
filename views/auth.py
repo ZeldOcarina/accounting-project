@@ -25,7 +25,7 @@ def load_user(user_id):
 
 
 class Register(View):
-    # decorators = [login_required]
+    decorators = [login_required]
     methods = ['GET', 'POST']
 
     def dispatch_request(self):
