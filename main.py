@@ -43,7 +43,6 @@ try:
         db.create_all()
 except:
     print("Unexpected error: ", sys.exc_info()[0])
-    pass
 
 auth.login_manager.init_app(app)
 
