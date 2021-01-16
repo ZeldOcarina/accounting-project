@@ -1,4 +1,3 @@
-functools
 flask~=1.1.2
 flask_bootstrap
 werkzeug~=1.0.1
