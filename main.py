@@ -4,7 +4,6 @@ import importlib
 from flask import Flask, redirect, url_for, g
 from flask_bootstrap import Bootstrap
 from flask_login import current_user
-from sqlite3 import OperationalError
 
 from model import db, User
 from views import Home
@@ -42,7 +41,8 @@ db.init_app(app)
 try:
     with app.app_context():
         db.create_all()
-except sqlite3.OperationalError:
+except:
+    print("Unexpected error: ", sys.exc_info()[0])
     pass
 
 auth.login_manager.init_app(app)
