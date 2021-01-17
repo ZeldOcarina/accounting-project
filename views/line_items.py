@@ -61,6 +61,7 @@ class CreateLineItemView(View):
                     Key=file_name,
                     Bucket=os.environ.get("S3_BUCKET"))
 
+            print(form.validate_on_submit())
             if form.validate_on_submit():
                 try:
                     line_item = LineItem(
@@ -85,6 +86,8 @@ class CreateLineItemView(View):
                     return redirect(url_for('new_line_item'))
                 else:
                     return redirect(url_for('home'))
+            else:
+                print(form.errors)
         return render_template('new_line.html', form=form)
 
 
@@ -134,7 +137,7 @@ class EditLineView(View):
 
         if request.method == 'DELETE':
             if line_item.file:
-                delete_file(os.path.join(current_app.config['UPLOAD_FOLDER'], line_item.file), line_item.file)
+                delete_file(line_item.file)
             db.session.delete(line_item)
             db.session.commit()
             return redirect(url_for('home'))

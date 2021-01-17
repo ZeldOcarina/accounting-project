@@ -5,7 +5,7 @@ from flask import Flask, redirect, url_for, g
 from flask_bootstrap import Bootstrap
 from flask_login import current_user
 
-from model import db, User
+from model import db
 from views import Home
 
 auth_spec = importlib.util.spec_from_file_location('auth', 'views/auth.py')
@@ -27,7 +27,6 @@ vendors_spec.loader.exec_module(vendors)
 APP_SECRET = os.getenv("APP_SECRET")
 # DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///accounting.db")
 DATABASE_URL = os.environ.get("DATABASE_URL")
-
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = APP_SECRET

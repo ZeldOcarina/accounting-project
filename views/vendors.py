@@ -24,5 +24,7 @@ class CreateVendorView(View):
                 db.session.commit()
                 print(vendor)
             return redirect('/')
+        else:
+            print(form.errors, form.data)
         print("Accessing vendor get")
         return render_template('new_customer.html', form=form, type="vendor")
