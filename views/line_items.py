@@ -77,8 +77,11 @@ class CreateLineItemView(View):
                     )
                     db.session.add(line_item)
                     db.session.commit()
+                    print(line_item)
                 except InterfaceError:
+                    print('interfaceError')
                     flash("Please fill all needed data")
+
                     return redirect(url_for('new_line_item'))
                 else:
                     return redirect(url_for('home'))
