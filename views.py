@@ -1,13 +1,29 @@
+import os
 from flask.views import View
 from flask import render_template, current_app, request
 from model import db, LineItem, Customer, Vendor
 import requests
 from datetime import datetime
 from sqlalchemy import and_
-import os
+import boto3
+from botocore.exceptions import ClientError
+from botocore.config import Config
 
 API_ENDPOINT = "http://data.fixer.io/api/latest"
 API_KEY = os.getenv("FIXER_API_KEY")
+
+my_config = Config(
+    region_name=os.environ.get("AWS_REGION"),
+    signature_version='s3v4',
+)
+
+client = boto3.client(
+    's3',
+    aws_access_key_id=os.environ.get("AWS_ACCESS_KEY"),
+    aws_secret_access_key=os.environ.get("AWS_SECRET_KEY"),
+    endpoint_url='https://s3.eu-central-1.amazonaws.com',
+    config=my_config
+)
 
 
 class Home(View):
@@ -27,24 +43,23 @@ class Home(View):
 
             filters = tuple(filters_list)
 
-            all_line_items = db.session.query(LineItem)\
-                .filter(*filters)\
-                .order_by(LineItem.line_date.desc())\
+            all_line_items = db.session.query(LineItem) \
+                .filter(*filters) \
+                .order_by(LineItem.line_date.desc()) \
                 .all()
         else:
             all_line_items = db.session.query(LineItem).order_by(LineItem.line_date.desc()).all()
         customers = db.session.query(Customer).all()
         vendors = db.session.query(Vendor).all()
 
-
         # Base currency is EUR
-        response = requests.get(url=API_ENDPOINT, params={"access_key": API_KEY, "symbols": 'CHF,USD'})
-        CHF_rate = float(response.json()["rates"]["CHF"])
-        USD_rate = float(response.json()["rates"]["USD"])
+        # response = requests.get(url=API_ENDPOINT, params={"access_key": API_KEY, "symbols": 'CHF,USD'})
+        # CHF_rate = float(response.json()["rates"]["CHF"])
+        # USD_rate = float(response.json()["rates"]["USD"])
 
         # print(f'CHF: {CHF_rate}, USD: {USD_rate}')
-        # CHF_rate = 1.084
-        # USD_rate = 1.2225
+        CHF_rate = 1.084
+        USD_rate = 1.2225
 
         total_balance = 0
         for line_item in all_line_items:
@@ -71,6 +86,14 @@ class Home(View):
             for vendor in vendors:
                 if vendor.id == line_item.vendor_id:
                     line_item.vendor = vendor
+
+            if line_item.file:
+                line_item.presigned_url = \
+                    client.generate_presigned_url('get_object',
+                                                  Params={'Bucket': os.environ.get('S3_BUCKET'),
+                                                          'Key': line_item.file,
+                                                          'ResponseContentType': "application/pdf"},
+                                                  ExpiresIn=3600)
 
         return render_template('index.html', line_items=all_line_items, customers=customers, vendors=vendors,
                                total_balance=round(total_balance, 2),

@@ -74,7 +74,7 @@
         <td>{{ item.customer.name if item.customer else '' }}</td>
         <td>{{ item.vendor.name if item.vendor else '' }}</td>
         <td>{% if item.file %}
-              <a href="{{ uploads_directory }}/{{ item.file }}"><i class="far fa-file-pdf"></i></a>
+              <a href="{{ item.presigned_url }}"><i class="far fa-file-pdf"></i></a>
             {% endif %}
         </td>
         <td><a href="{{ url_for('edit_line_item', line_item_id=item.id) }}"><i class="fas fa-edit"></i></a></td>

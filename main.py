@@ -71,6 +71,7 @@ app.add_url_rule('/customers/<int:customer_id>', view_func=customers.SingleCusto
 # Line Items
 app.add_url_rule('/line-items/create', view_func=line_items.CreateLineItemView.as_view('new_line_item'))
 app.add_url_rule('/line-items/<int:line_item_id>', view_func=line_items.EditLineView.as_view('edit_line_item'))
+app.add_url_rule('/line-items/download', view_func=line_items.DownloadFile.as_view('download_file'))
 
 # Vendors
 app.add_url_rule('/vendors/create', view_func=vendors.CreateVendorView.as_view('new_vendor'))
