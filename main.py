@@ -25,7 +25,8 @@ vendors = importlib.util.module_from_spec(vendors_spec)
 vendors_spec.loader.exec_module(vendors)
 
 APP_SECRET = os.getenv("APP_SECRET")
-DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///accounting.db")
+# DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///accounting.db")
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 app = Flask(__name__)
 
