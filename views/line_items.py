@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+from io import StringIO
 from flask import request, redirect, render_template, url_for, g, flash, current_app
 from flask.views import View
 from flask_login import login_required
@@ -8,7 +9,6 @@ from sqlalchemy.exc import InterfaceError
 from forms import CreateLine
 from model import db, LineItem, Customer, Vendor
 import boto3
-from botocore.exceptions import ClientError
 from botocore.config import Config
 
 my_config = Config(
@@ -24,32 +24,6 @@ client = boto3.client(
     config=my_config
 )
 
-
-# s3 = boto3.resource('s3')
-# bucket = s3.Bucket(os.environ.get("S3_BUCKET"))
-
-
-def upload_file_to_s3(file_name, bucket, object_name=None):
-    """Upload a file to an S3 bucket
-
-    :param file_name: File to upload
-    :param bucket: Bucket to upload to
-    :param object_name: S3 object name. If not specified then file_name is used
-    :return: True if file was uploaded, else False
-    """
-
-    # If S3 object_name was not specified, use file_name
-    if object_name is None:
-        object_name = file_name
-
-    try:
-        response = client.upload_file(file_name, bucket, object_name)
-    except ClientError as e:
-        print(e)
-        return False
-    return True
-
-
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx'}
 
 
@@ -58,24 +32,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def upload_file(files, incoming_request):
-    if 'document' not in files:
-        flash("No file!")
-        return redirect(request.url)
-    file = files['document']
-    if file.filename == '':
-        flash('No file!')
-        return redirect(request.url)
-    if file and allowed_file(file.filename):
-        filename = secure_filename(f"{incoming_request.get('kind').lower()}-{datetime.now().strftime('%d%m%Y%H%M%S')}"
-                                   f".{file.filename.split('.')[-1]}")
-        file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-        return filename
-
-
-def delete_file(local_filename, filename):
-    if os.path.exists(local_filename):
-        os.remove(local_filename)
+def delete_file(filename):
     client.delete_object(Bucket=os.environ.get("S3_BUCKET"), Key=filename)
 
 
@@ -94,10 +51,15 @@ class CreateLineItemView(View):
             date_time_obj = datetime.strptime(date_time_str, '%Y-%m-%d')
 
             if 'document' in request.files:
-                file_name = upload_file(request.files, request.form)
-                new_upload = upload_file_to_s3(file_name=os.path.join(current_app.config['UPLOAD_FOLDER'], file_name),
-                                               bucket=os.environ.get("S3_BUCKET"),
-                                               object_name=file_name)
+                file_name = secure_filename(
+                    f"{request.form.get('kind').lower()}-{datetime.now().strftime('%d%m%Y%H%M%S')}"
+                    f".{request.files['document'].filename.split('.')[-1]}")
+                buffer = request.files['document'].read()
+
+                client.put_object(
+                    Body=buffer,
+                    Key=file_name,
+                    Bucket=os.environ.get("S3_BUCKET"))
 
             if form.validate_on_submit():
                 try:
@@ -136,14 +98,19 @@ class EditLineView(View):
 
         if request.method == 'POST':
             if line_item.file and 'document' in request.files:
-                delete_file(os.path.join(current_app.config['UPLOAD_FOLDER'], line_item.file), line_item.file)
+                delete_file(line_item.file)
 
             if 'document' in request.files:
-                new_file_name = upload_file(request.files, request.form)
+                new_file_name = secure_filename(
+                                    f"{request.form.get('kind').lower()}-{datetime.now().strftime('%d%m%Y%H%M%S')}"
+                                    f".{request.files['document'].filename.split('.')[-1]}")
                 line_item.file = new_file_name
-                upload_file_to_s3(file_name=os.path.join(current_app.config['UPLOAD_FOLDER'], new_file_name),
-                                  bucket=os.environ.get("S3_BUCKET"),
-                                  object_name=new_file_name)
+                buffer = request.files['document'].read()
+
+                client.put_object(
+                    Body=buffer,
+                    Key=new_file_name,
+                    Bucket=os.environ.get("S3_BUCKET"))
 
             date_time_str = request.form.get("line_date")
             date_time_obj = datetime.strptime(date_time_str, '%Y-%m-%d')
@@ -163,20 +130,10 @@ class EditLineView(View):
             return redirect("/")
 
         if request.method == 'DELETE':
-            delete_file(os.path.join(current_app.config['UPLOAD_FOLDER'], line_item.file), line_item.file)
+            if line_item.file:
+                delete_file(os.path.join(current_app.config['UPLOAD_FOLDER'], line_item.file), line_item.file)
             db.session.delete(line_item)
             db.session.commit()
             return redirect(url_for('home'))
 
         return render_template('new_line.html', form=form)
-
-
-class DownloadFile(View):
-    def dispatch_request(self):
-        presigned_url = client.generate_presigned_url('get_object',
-                                                      Params={'Bucket': os.environ.get('S3_BUCKET'),
-                                                              'Key': request.args.get("filename"),
-                                                              'ResponseContentType': "application/pdf"},
-                                                      ExpiresIn=3600)
-
-        return f'<a href="{presigned_url}">click here</a>'

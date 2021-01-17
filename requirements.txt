@@ -9,6 +9,7 @@ flask_wtf
 email_validator
 python-dotenv~=0.15.0
 gunicorn==20.0.4
-requests
+requests~=2.25.1
 psycopg2-binary==2.8.6
 boto3==1.16.56
+botocore~=1.19.56
