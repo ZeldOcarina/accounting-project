@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, SelectField, BooleanField, FileField
 from wtforms.fields.html5 import EmailField, TelField, DateField
-from wtforms.validators import DataRequired, Email
+from wtforms.validators import DataRequired, Email, Optional
 
 
 class RegisterForm(FlaskForm):
@@ -19,21 +19,21 @@ class LoginForm(FlaskForm):
 
 class CreateCustomer(FlaskForm):
     name = StringField("Customer Name", validators=[DataRequired()])
-    phone_number = TelField("Phone Number", validators=[])
-    email = EmailField("Email", validators=[Email()])
-    address = StringField("Address", validators=[])
-    zip_code = StringField("ZIP Code", validators=[])
-    iva_code = StringField("IVA Code", validators=[])
+    phone_number = TelField("Phone Number", validators=[Optional()])
+    email = EmailField("Email", validators=[Optional(), Email()])
+    address = StringField("Address", validators=[Optional()])
+    zip_code = StringField("ZIP Code", validators=[Optional()])
+    iva_code = StringField("IVA Code", validators=[Optional()])
     submit = SubmitField("Submit")
 
 
 class CreateVendor(FlaskForm):
     name = StringField("Vendor Name", validators=[DataRequired()])
-    phone_number = TelField("Phone Number", validators=[])
-    email = EmailField("Email", validators=[Email()])
-    address = StringField("Address", validators=[])
-    zip_code = StringField("ZIP Code", validators=[])
-    iva_code = StringField("IVA Code", validators=[])
+    phone_number = TelField("Phone Number", validators=[Optional()])
+    email = EmailField("Email", validators=[Optional(), Email()])
+    address = StringField("Address", validators=[Optional()])
+    zip_code = StringField("ZIP Code", validators=[Optional()])
+    iva_code = StringField("IVA Code", validators=[Optional()])
     submit = SubmitField("Submit")
 
 

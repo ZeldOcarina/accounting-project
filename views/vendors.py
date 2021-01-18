@@ -2,6 +2,7 @@ from flask import request, redirect, render_template, url_for
 from flask.views import View
 from forms import CreateVendor
 from model import db, Vendor, Customer
+from datetime import datetime
 
 
 class CreateVendorView(View):
@@ -19,12 +20,8 @@ class CreateVendorView(View):
                     iva_code=request.form.get("iva_code"),
                     phone_number=request.form.get("phone_number"),
                 )
-                # customer = Customer.from_form_data(request.form)
                 db.session.add(vendor)
                 db.session.commit()
-                print(vendor)
-            return redirect('/')
-        else:
-            print(form.errors, form.data)
-        print("Accessing vendor get")
+                return redirect('/')
+
         return render_template('new_customer.html', form=form, type="vendor")

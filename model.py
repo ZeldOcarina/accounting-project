@@ -34,7 +34,7 @@ class Vendor(db.Model):
     name = db.Column(db.String(200), nullable=False, unique=True)
     address = db.Column(db.String(500))
     email = db.Column(db.String(500))
-    zip_code = db.Column(db.Integer())
+    zip_code = db.Column(db.String(10))
     iva_code = db.Column(db.String(200))
     phone_number = db.Column(db.String(500))
     creation_date = db.Column(db.DateTime, default=date.today())
