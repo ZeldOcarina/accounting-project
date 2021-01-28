@@ -25,44 +25,44 @@
   <div class="query-form container mb-5">
     <form action="{{ url_for('home') }}" class="query-form__form">
       <div class="form-group">
-        <label for="daterange">Date</label>
+        <label for="daterange">Data</label>
         <input type="text" id="daterange" name="daterange" value="01/01/2018 - 01/15/2018" />
-        <label class="ml-4" for="customer-picker">Customer</label>
+        <label class="ml-4" for="customer-picker">Cliente</label>
         <select name="customer" id="customer-picker">
             <option value="" name="" {% if not query or query.customer == '' %}selected{% endif %}></option>
           {% for customer in customers %}
             <option value="{{ customer.id }}" {% if query.customer == str(customer.id) %}selected{% endif %}>{{ customer.name }}</option>
           {% endfor %}
         </select>
-        <label class="ml-4" for="vendor-picker">Vendor</label>
+        <label class="ml-4" for="vendor-picker">Fornitore</label>
         <select name="vendor" id="vendor-picker">
             <option value="" {% if not query or query.vendor == '' %}selected{% endif %}></option>
           {% for vendor in vendors %}
             <option value="{{ vendor.id }}" {% if query.vendor == str(vendor.id) %}selected{% endif %}>{{ vendor.name }}</option>
           {% endfor %}
         </select>
-        <label class="ml-4" for="kind-picker">Kind</label>
+        <label class="ml-4" for="kind-picker">Tipologia</label>
         <select name="kind" id="kind-picker">
             <option value="" {% if not query or query.kind == '' %}selected{% endif %}></option>
-            <option value="Invoice"{% if query.kind == 'Invoices'%}selected{% endif %}>Invoices</option>
-            <option value="Expense"{% if query.kind == 'Expense'%}selected{% endif %}>Expense</option>
+            <option value="Invoice"{% if query.kind == 'Invoices'%}selected{% endif %}>Fatture</option>
+            <option value="Expense"{% if query.kind == 'Expense'%}selected{% endif %}>Uscite</option>
         </select>
-        <button type="submit" class="btn btn-primary ml-4">Search</button>
+        <button type="submit" class="btn btn-primary ml-4">Cerca</button>
       </div>
     </form>
   </div>
   <div class="main-content container d-flex flex-column align-items-center justify-content-center mt-5">
     <table class="table">
-      <th scope="col">Kind</th>
-      <th scope="col">Date</th>
-      <th scope="col">Item</th>
-      <th scope="col">Amount</th>
-      <th scope="col">Paid</th>
-      <th scope="col">Customer</th>
-      <th scope="col">Vendor</th>
+      <th scope="col">Tipologia</th>
+      <th scope="col">Data</th>
+      <th scope="col">Voce</th>
+      <th scope="col">Ammontare</th>
+      <th scope="col">Pagato?</th>
+      <th scope="col">Cliente</th>
+      <th scope="col">Fornitore</th>
       <th scope="col">File</th>
-      <th scope="col">Edit</th>
-      <th scope="col">Delete</th>
+      <th scope="col">Modifica</th>
+      <th scope="col">Cancella</th>
     {% for item in line_items %}
       <tr>
         <td>{{ item.kind }}</td>

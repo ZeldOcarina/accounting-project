@@ -12,7 +12,7 @@
         <div class="col-lg-8 col-md-10 mx-auto">
           <div class="page-heading">
             <h1>Log In</h1>
-            <span class="subheading">Welcome Back!</span>
+            <span class="subheading">Bentornato!</span>
           </div>
         </div>
       </div>
@@ -24,7 +24,7 @@
 
       <div class="col-lg-8 col-md-10 mx-auto content">
         {% if error %}
-          <p class=error><strong>Error:</strong> {{ error }}</p>
+          <p class=error><strong>Errore:</strong> {{ error }}</p>
         {% endif %}
         {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
       </div>
